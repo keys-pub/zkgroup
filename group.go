@@ -9,9 +9,6 @@ import "C"
 // GroupSecretParams ...
 type GroupSecretParams []byte
 
-// GroupPublicParams ...
-type GroupPublicParams []byte
-
 // GenerateGroupSecretParams ...
 func GenerateGroupSecretParams() (GroupSecretParams, error) {
 	return GenerateGroupSecretParamsDeterministic(randBytes(32))
@@ -51,4 +48,19 @@ func (g GroupSecretParams) PublicParams() (GroupPublicParams, error) {
 		return nil, errFromCode(res)
 	}
 	return GroupPublicParams(out), nil
+}
+
+// GroupPublicParams ...
+type GroupPublicParams []byte
+
+// GroupIdentifier ...
+type GroupIdentifier []byte
+
+// GroupIdentifier ...
+func (g GroupPublicParams) GroupIdentifier() (GroupIdentifier, error) {
+	out := make([]byte, C.GROUP_IDENTIFIER_LEN)
+	if res := C.FFI_GroupPublicParams_getGroupIdentifier(cBytes(g), cLen(g), cBytes(out), cLen(out)); res != C.FFI_RETURN_OK {
+		return nil, errFromCode(res)
+	}
+	return GroupIdentifier(out), nil
 }

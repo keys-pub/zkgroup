@@ -48,15 +48,6 @@ func GenerateServerSecretParamsDeterministic(random []byte) (ServerSecretParams,
 	return ServerSecretParams(out), nil
 }
 
-// NewServerSecretParams ...
-func NewServerSecretParams(b []byte) (ServerSecretParams, error) {
-	out := make([]byte, C.SERVER_SECRET_PARAMS_LEN)
-	if res := C.FFI_GroupSecretParams_deriveFromMasterKey(cBytes(b), cLen(b), cBytes(out), cLen(out)); res != C.FFI_RETURN_OK {
-		return nil, errFromCode(res)
-	}
-	return ServerSecretParams(out), nil
-}
-
 // PublicParams ...
 func (g ServerSecretParams) PublicParams() (ServerPublicParams, error) {
 	out := make([]byte, C.SERVER_PUBLIC_PARAMS_LEN)
@@ -86,8 +77,8 @@ type ServerZkAuthOperations struct {
 }
 
 // NewServerZkAuthOperations ...
-func NewServerZkAuthOperations(serverSecretParams ServerSecretParams) ServerZkAuthOperations {
-	return ServerZkAuthOperations{serverSecretParams: serverSecretParams}
+func NewServerZkAuthOperations(serverSecretParams ServerSecretParams) *ServerZkAuthOperations {
+	return &ServerZkAuthOperations{serverSecretParams: serverSecretParams}
 }
 
 // IssueAuthCredential ...

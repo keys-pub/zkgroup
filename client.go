@@ -5,7 +5,11 @@ package zkgroup
 #include "./lib/zkgroup.h"
 */
 import "C"
-import "encoding/binary"
+import (
+	"encoding/binary"
+
+	"github.com/pkg/errors"
+)
 
 // ClientZkGroupCipher ...
 type ClientZkGroupCipher struct {
@@ -13,8 +17,8 @@ type ClientZkGroupCipher struct {
 }
 
 // NewClientZkGroupCipher ...
-func NewClientZkGroupCipher(groupSecretParams GroupSecretParams) ClientZkGroupCipher {
-	return ClientZkGroupCipher{groupSecretParams: groupSecretParams}
+func NewClientZkGroupCipher(groupSecretParams GroupSecretParams) *ClientZkGroupCipher {
+	return &ClientZkGroupCipher{groupSecretParams: groupSecretParams}
 }
 
 // EncryptBlob ...
@@ -55,6 +59,9 @@ func (c ClientZkGroupCipher) DecryptBlob(ciphertext []byte) ([]byte, error) {
 
 // EncryptUUID ...
 func (c ClientZkGroupCipher) EncryptUUID(uuid UUID) ([]byte, error) {
+	if len(uuid) != C.UUID_LEN {
+		return nil, errors.Errorf("invalid uuid length")
+	}
 	ciphertext := make([]byte, C.UUID_CIPHERTEXT_LEN)
 	if res := C.FFI_GroupSecretParams_encryptUuid(cBytes(c.groupSecretParams), cLen(c.groupSecretParams), cBytes(uuid), cLen(uuid), cBytes(ciphertext), cLen(ciphertext)); res != C.FFI_RETURN_OK {
 		return nil, errFromCode(res)
@@ -77,8 +84,11 @@ type ClientZkAuthOperations struct {
 }
 
 // NewClientZkAuthOperations ...
-func NewClientZkAuthOperations(serverPublicParams ServerPublicParams) ClientZkAuthOperations {
-	return ClientZkAuthOperations{serverPublicParams: serverPublicParams}
+func NewClientZkAuthOperations(serverPublicParams ServerPublicParams) (*ClientZkAuthOperations, error) {
+	if serverPublicParams == nil {
+		return nil, errors.Errorf("empty server public params")
+	}
+	return &ClientZkAuthOperations{serverPublicParams: serverPublicParams}, nil
 }
 
 // ReceiveAuthCredential ...
