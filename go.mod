@@ -1,4 +1,4 @@
-module github.com/keys-pub/zkgroup
+module github.com/nanu-c/zkgroup
 
 go 1.15
 
