@@ -1,7 +1,7 @@
 package zkgroup
 
 /*
-#cgo LDFLAGS: ${SRCDIR}/lib/libzkgroup.a
+#cgo LDFLAGS: ${SRCDIR}/lib/libzkgroup.so
 #include "./lib/zkgroup.h"
 */
 import "C"
@@ -24,6 +24,7 @@ func GenerateGroupSecretParamsDeterministic(random []byte) (GroupSecretParams, e
 }
 
 // NewGroupSecretParams ...
+// DeriveFromMasterKey
 func NewGroupSecretParams(masterKey []byte) (GroupSecretParams, error) {
 	out := make([]byte, C.GROUP_SECRET_PARAMS_LEN)
 	if res := C.FFI_GroupSecretParams_deriveFromMasterKey(cBytes(masterKey), cLen(masterKey), cBytes(out), cLen(out)); res != C.FFI_RETURN_OK {

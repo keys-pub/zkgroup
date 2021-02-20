@@ -1,7 +1,7 @@
 package zkgroup
 
 /*
-#cgo LDFLAGS: ${SRCDIR}/lib/libzkgroup.a
+#cgo LDFLAGS: ${SRCDIR}/lib/libzkgroup.so
 #include "./lib/zkgroup.h"
 */
 import "C"
@@ -60,7 +60,7 @@ func (c ClientZkGroupCipher) DecryptBlob(ciphertext []byte) ([]byte, error) {
 // EncryptUUID ...
 func (c ClientZkGroupCipher) EncryptUUID(uuid UUID) ([]byte, error) {
 	if len(uuid) != C.UUID_LEN {
-		return nil, errors.Errorf("invalid uuid length")
+		return nil, errors.Errorf("invalid uuid length", len(uuid), C.UUID_LEN)
 	}
 	ciphertext := make([]byte, C.UUID_CIPHERTEXT_LEN)
 	if res := C.FFI_GroupSecretParams_encryptUuid(cBytes(c.groupSecretParams), cLen(c.groupSecretParams), cBytes(uuid), cLen(uuid), cBytes(ciphertext), cLen(ciphertext)); res != C.FFI_RETURN_OK {

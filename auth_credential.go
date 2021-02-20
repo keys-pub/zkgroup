@@ -1,7 +1,7 @@
 package zkgroup
 
 /*
-#cgo LDFLAGS: ${SRCDIR}/lib/libzkgroup.a
+#cgo LDFLAGS: ${SRCDIR}/lib/libzkgroup.so
 #include "./lib/zkgroup.h"
 */
 import "C"

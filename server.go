@@ -1,12 +1,12 @@
 package zkgroup
 
 /*
-#cgo LDFLAGS: ${SRCDIR}/lib/libzkgroup.a
+#cgo LDFLAGS: ${SRCDIR}/lib/libzkgroup.so
 #include "./lib/zkgroup.h"
 */
 import "C"
 
-// NotarySignature ...
+// NotarySignature ... has a may length of 64
 type NotarySignature []byte
 
 // ServerPublicParams ...
@@ -22,6 +22,7 @@ func NewServerPublicParams(b []byte) (ServerPublicParams, error) {
 
 // VerifySignature ...
 func (p ServerPublicParams) VerifySignature(message []byte, notarySignarture NotarySignature) error {
+
 	if res := C.FFI_ServerPublicParams_verifySignature(cBytes(p), cLen(p), cBytes(message), cLen(message), cBytes(notarySignarture), cLen(notarySignarture)); res != C.FFI_RETURN_OK {
 		if res == C.FFI_RETURN_INPUT_ERROR {
 			return ErrVerificationFailed
