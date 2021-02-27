@@ -1,10 +1,11 @@
 package zkgroup
 
 /*
-#cgo linux,arm64 LDFLAGS: ${SRCDIR}/lib/libzkgroup_linux_arm64.so
-#cgo linux,arm6 LDFLAGS: ${SRCDIR}/lib/libzkgroup_linux_armhf.so
-#cgo linux,amd64 LDFLAGS: ${SRCDIR}/lib/libzkgroup_linux_amd64.so
-#include "./lib/zkgroup.h"
+#cgo linux,amd64 LDFLAGS: -L${SRCDIR}/lib '-Wl,-rpath,$$ORIGIN/' -lzkgroup_linux_amd64
+#cgo linux,arm64 LDFLAGS: -L${SRCDIR}/lib '-Wl,-rpath,$$ORIGIN/' -lzkgroup_linux_arm64
+#cgo linux,arm LDFLAGS: -L${SRCDIR}/lib '-Wl,-rpath,$$ORIGIN/' -lzkgroup_linux_armhf
+
+#include "lib/zkgroup.h"
 */
 import "C"
 import "encoding/binary"

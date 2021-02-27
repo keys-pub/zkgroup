@@ -5,7 +5,7 @@ import (
 	"encoding/hex"
 	"testing"
 
-	"github.com/keys-pub/zkgroup"
+	"github.com/nanu-c/zkgroup"
 	"github.com/stretchr/testify/require"
 )
 
