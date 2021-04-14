@@ -52,6 +52,15 @@ func (a AuthCredentialPresentation) UUIDCiphertext() ([]byte, error) {
 	return out, nil
 }
 
+// ProfileKeyCiphertext ...
+func (a AuthCredentialPresentation) ProfileKeyCiphertext() ([]byte, error) {
+	out := make([]byte, C.PROFILE_KEY_CIPHERTEXT_LEN)
+	if res := C.FFI_ProfileKeyCredentialPresentation_getProfileKeyCiphertext(cBytes(a), cLen(a), cBytes(out), cLen(out)); res != C.FFI_RETURN_OK {
+		return nil, errFromCode(res)
+	}
+	return out, nil
+}
+
 // RedemptionTime ...
 func (a AuthCredentialPresentation) RedemptionTime() (uint32, error) {
 	out := make([]byte, 4)
