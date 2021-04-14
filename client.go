@@ -81,6 +81,16 @@ func (c ClientZkGroupCipher) DecryptUUID(ciphertext []byte) (UUID, error) {
 	return uuid, nil
 }
 
+// DecryptProfileKey ...
+func (c ClientZkGroupCipher) DecryptProfileKey(profileKeyCiphertext []byte, uuid []byte) (UUID, error) {
+	profileKey := make([]byte, C.PROFILE_KEY_LEN)
+
+	if res := C.FFI_GroupSecretParams_decryptProfileKey(cBytes(c.groupSecretParams), cLen(c.groupSecretParams), cBytes(profileKeyCiphertext), cLen(profileKeyCiphertext), cBytes(uuid), cLen(uuid), cBytes(profileKey), cLen(profileKey)); res != C.FFI_RETURN_OK {
+		return nil, errFromCode(res)
+	}
+	return profileKey, nil
+}
+
 // ClientZkAuthOperations ...
 type ClientZkAuthOperations struct {
 	serverPublicParams ServerPublicParams
