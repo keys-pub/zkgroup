@@ -16,13 +16,21 @@ jobs:
         uses: actions-rs/toolchain@v1
         with:
           toolchain: stable
+          target: aarch64-unknown-linux-gnu
 
       - name: Build zkgroup library
         uses: actions-rs/cargo@v1
         with:
           use-cross: true
           command: build
-          args: --manifest-path lib/zkgroup/Cargo.toml
+          args: --manifest-path lib/zkgroup/Cargo.toml --target aarch64-unknown-linux-gnu
+
+      - name: Debug
+        run: |
+          pwd
+          ls -la
+          ls -la lib/zkgroup
+          ls -la lib/zkgroup/target
 
       - name: Upload built artifact
         uses: actions/upload-artifact@v2
