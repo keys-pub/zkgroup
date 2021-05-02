@@ -12,11 +12,15 @@ jobs:
         with:
           submodules: recursive
 
-      - uses: actions-rs/toolchain@v1
+      - name: Setup rust stable toolchain
+        uses: actions-rs/toolchain@v1
         with:
           toolchain: stable
+          target: aarch64-unknown-linux-gnu
+          override: true
 
-      - run: |
-          cargo install cross
-          cd lib/zkgroup/
-          cross build --target aarch64-unknown-linux-gnu
+      - uses: actions-rs/cargo@v1
+        with:
+          use-cross: true
+          command: build
+          args: --target aarch64-unknown-linux-gnu
