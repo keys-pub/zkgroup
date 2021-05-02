@@ -7,18 +7,16 @@ jobs:
     name: build zkgroup
     runs-on: ubuntu-latest
     steps:
-      - name: Setup Go 1.15
-        uses: actions/setup-go@v2
-        with:
-          go-version: 1.15
-
       - name: Check out code
         uses: actions/checkout@v2
         with:
           submodules: recursive
 
-      - name: Download dependencies
-        run: go mod download
+      - uses: actions-rs/toolchain@v1
+        with:
+          toolchain: stable
 
-      - name: Build
-        run: go build -v
+      - run: |
+          cargo install cross
+          cd lib/zkgroup/
+          cross build --target aarch64-unknown-linux-gnu
