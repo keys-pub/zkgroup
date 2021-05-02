@@ -17,15 +17,10 @@ jobs:
         with:
           toolchain: stable
           target: aarch64-unknown-linux-gnu
-
-      - name: Debug cross linker location
-        run: |
-          ls -la /usr/bin/
+          override: true
 
       - name: Build zkgroup library
         uses: actions-rs/cargo@v1
-        env:
-          CARGO_TARGET_AARCH64_UNKNOWN_LINUX_GNU_LINKER: /usr/bin/aarch64-unknown-linux-gnu
         with:
           use-cross: true
           command: build
