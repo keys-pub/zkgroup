@@ -17,15 +17,16 @@ jobs:
         with:
           toolchain: stable
 
-      - uses: actions-rs/cargo@v1
+      - name: Build zkgroup library
+        uses: actions-rs/cargo@v1
         with:
           use-cross: true
-          command: build
+          command: build --release
           args: --manifest-path lib/zkgroup/Cargo.toml
 
       - name: Upload built artifact
         uses: actions/upload-artifact@v2
         with:
           name: libzkgroup.so
-          path: lib/zkgroup/target/*.so
+          path: lib/zkgroup/target/release/libzkgroup.so
           retention-days: 1
