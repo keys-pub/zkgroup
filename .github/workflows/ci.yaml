@@ -20,6 +20,8 @@ jobs:
 
       - name: Build zkgroup library
         uses: actions-rs/cargo@v1
+        env:
+          RUSTFLAGS: "-C opt-level=0"
         with:
           use-cross: true
           command: build
