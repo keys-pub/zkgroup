@@ -18,14 +18,18 @@ jobs:
           toolchain: stable
           target: aarch64-unknown-linux-gnu
 
+      - name: Debug cross linker location
+        run: |
+          ls -la /usr/bin/
+
       - name: Build zkgroup library
         uses: actions-rs/cargo@v1
         env:
-          RUSTFLAGS: "-C opt-level=0"
+          CARGO_TARGET_AARCH64_UNKNOWN_LINUX_GNU_LINKER: /usr/bin/aarch64-unknown-linux-gnu
         with:
           use-cross: true
           command: build
-          args: --manifest-path lib/zkgroup/Cargo.toml --target aarch64-unknown-linux-gnu
+          args: --manifest-path lib/zkgroup/Cargo.toml --target aarch64-unknown-linux-gnu --verbose
 
       - name: Debug
         run: |
