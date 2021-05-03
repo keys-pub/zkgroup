@@ -4,7 +4,7 @@ name: CI
 
 jobs:
   build-zkgroup:
-    name: build zkgroup
+    name: build zkgroup (first attempt)
     runs-on: ubuntu-latest
     steps:
       - name: Check out code
@@ -24,7 +24,7 @@ jobs:
         with:
           use-cross: true
           command: build
-          args: --manifest-path lib/zkgroup/Cargo.toml --target armv7-unknown-linux-gnueabihf --verbose
+          args: --target armv7-unknown-linux-gnueabihf --manifest-path lib/zkgroup/Cargo.toml
 
       - name: Debug
         run: |
