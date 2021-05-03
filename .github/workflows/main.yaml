@@ -7,7 +7,7 @@ jobs:
     name: build zkgroup
     strategy:
       matrix:
-        target: [x86_64-unknown-linux-musl]
+        target: [aarch64-unknown-linux-gnu]
     runs-on: ubuntu-latest
     steps:
       - name: Check out code
@@ -20,7 +20,6 @@ jobs:
         with:
           toolchain: nightly
           target: ${{ matrix.target }}
-          profile: minimal
           override: true
 
       - name: Build zkgroup library
@@ -35,10 +34,11 @@ jobs:
           pwd
           ls -la lib/zkgroup/target/${{ matrix.target }}
           ls -la lib/zkgroup/target/${{ matrix.target }}/debug
+          ls -la lib/zkgroup/target/${{ matrix.target }}/debug/build
 
       - name: Upload built artifact
         uses: actions/upload-artifact@v2
         with:
           name: zkgroup-debug-${{ matrix.target }}
-          path: lib/zkgroup/target/${{ matrix.target }}/debug/zkgroup
+          path: lib/zkgroup/target/${{ matrix.target }}/debug/libzkgroup.so
           if-no-files-found: error
