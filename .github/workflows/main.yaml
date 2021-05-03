@@ -33,14 +33,12 @@ jobs:
       - name: Debug
         run: |
           pwd
-          ls -la
-          ls -la lib/zkgroup
-          ls -la lib/zkgroup/target
+          ls -la lib/zkgroup/target/${{ matrix.target }}
+          ls -la lib/zkgroup/target/${{ matrix.target }}/debug
 
       - name: Upload built artifact
         uses: actions/upload-artifact@v2
         with:
           name: zkgroup-debug-${{ matrix.target }}
-          path: |
-            target/${{ matrix.target }}/debug/zkgroup
+          path: lib/zkgroup/target/${{ matrix.target }}/debug/zkgroup
           if-no-files-found: error
