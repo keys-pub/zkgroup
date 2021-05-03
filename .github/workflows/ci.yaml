@@ -41,7 +41,7 @@ jobs:
           retention-days: 1
 
   build-zkgroup-aarch64:
-    name: build zkgroup
+    name: build zkgroup (aarch64)
     runs-on: ubuntu-latest
     steps:
       - name: Check out code
