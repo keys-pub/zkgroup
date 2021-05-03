@@ -1,0 +1,34 @@
+on: [push]
+
+name: CI
+
+jobs:
+  check-build:
+    name: Check build
+    strategy:
+      matrix:
+        target: [x86_64-unknown-linux-musl, x86_64-pc-windows-gnu, i686-pc-windows-gnu]
+        platform: [ubuntu-latest]
+    runs-on: ${{ matrix.platform }}
+    steps:
+      - uses: actions/checkout@v2
+
+      - uses: actions-rs/toolchain@v1
+        with:
+          toolchain: nightly
+          target: ${{ matrix.target }}
+          profile: minimal
+          override: true
+
+      - uses: actions-rs/cargo@v1
+        with:
+          use-cross: true
+          command: build
+          args: --target=${{ matrix.target }}
+
+      - uses: actions/upload-artifact@v2
+        with:
+          name: zkgroup-debug-${{ matrix.target }}
+          path: |
+            target/${{ matrix.target }}/debug/zkgroup
+          if-no-files-found: error
