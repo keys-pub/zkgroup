@@ -7,7 +7,11 @@ jobs:
     name: build zkgroup
     strategy:
       matrix:
-        target: [x86_64-unknown-linux-gnu, aarch64-unknown-linux-gnu, armv7-unknown-linux-gnueabihf]
+        target:
+          - x86_64-unknown-linux-gnu
+          - aarch64-unknown-linux-gnu
+          - armv7-unknown-linux-gnueabihf
+
     runs-on: ubuntu-latest
     steps:
       - name: Check out code
@@ -22,11 +26,11 @@ jobs:
           target: ${{ matrix.target }}
           override: true
 
-      - name: Install the compiler for the aarch64 architecture
+      - name: Install aarch64 compiler
         if: ${{ matrix.target == 'aarch64-unknown-linux-gnu' }}
         run: sudo apt install gcc-aarch64-linux-gnu
 
-      - name: Install the compiler for the armhf architecture
+      - name: Install armhf compiler
         if: ${{ matrix.target == 'armv7-unknown-linux-gnueabihf' }}
         run: sudo apt install gcc-arm-linux-gnueabihf
 
