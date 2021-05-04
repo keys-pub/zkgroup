@@ -4,7 +4,7 @@ name: CI
 
 jobs:
   build-zkgroup:
-    name: build zkgroup
+    name: Build zkgroup
     strategy:
       matrix:
         target:
@@ -47,6 +47,77 @@ jobs:
       - name: Upload built artifact
         uses: actions/upload-artifact@v2
         with:
-          name: zkgroup-debug-${{ matrix.target }}
+          name: zkgroup-${{ matrix.target }}
           path: lib/zkgroup/target/${{ matrix.target }}/debug/libzkgroup.so
           if-no-files-found: error
+
+  release:
+    name: Create zkgroup release
+    # This ensures that this job only runs on git tags
+    if: startsWith(github.ref, 'refs/tags/v')
+    needs:
+      - build-zkgroup
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v2
+        with:
+          submodules: recursive
+
+      - name: Get git tag version
+        id: get_version
+        uses: battila7/get-version-action@v2
+
+      - name: Set git tag version
+        run: |
+          echo "VERSION=${{ steps.get_version.outputs.version }}" >> $GITHUB_ENV
+
+      - name: Download build artifacts
+        uses: actions/download-artifact@v2
+        with:
+          path: build-artifacts
+
+      - name: Create draft GitHub release page
+        id: create_release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ env.VERSION }}
+          release_name: ${{ env.VERSION }}
+          body: |
+            -
+            -
+          draft: true
+          prerelease: false
+
+      - name: Add zkgroup to release (x86_64)
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ./build-artifacts/zkgroup-x86_64-unknown-linux-gnu/libzkgroup.so
+          asset_name: libzkgroup-linux_x86_64-${{ env.VERSION }}.so
+          asset_content_type: application/octet-stream
+
+      - name: Add zkgroup to release (aarch64)
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ./build-artifacts/zkgroup-aarch64-unknown-linux-gnu/libzkgroup.so
+          asset_name: libzkgroup-linux-aarch64-${{ env.VERSION }}.so
+          asset_content_type: application/octet-stream
+
+      - name: Add zkgroup to release (armv7)
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ./build-artifacts/zkgroup-armv7-unknown-linux-gnueabihf/libzkgroup.so
+          asset_name: libzkgroup-linux-armv7-${{ env.VERSION }}.so
+          asset_content_type: application/octet-stream
