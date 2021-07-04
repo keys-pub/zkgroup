@@ -99,7 +99,7 @@ jobs:
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
           asset_path: ./build-artifacts/zkgroup-x86_64-unknown-linux-gnu/libzkgroup.so
-          asset_name: libzkgroup-linux_x86_64-${{ env.VERSION }}.so
+          asset_name: libzkgroup_linux_x86_64-${{ env.VERSION }}.so
           asset_content_type: application/octet-stream
 
       - name: Add zkgroup to release (aarch64)
@@ -109,7 +109,7 @@ jobs:
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
           asset_path: ./build-artifacts/zkgroup-aarch64-unknown-linux-gnu/libzkgroup.so
-          asset_name: libzkgroup-linux-aarch64-${{ env.VERSION }}.so
+          asset_name: libzkgroup_linux_aarch64_${{ env.VERSION }}.so
           asset_content_type: application/octet-stream
 
       - name: Add zkgroup to release (armv7)
@@ -119,5 +119,5 @@ jobs:
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
           asset_path: ./build-artifacts/zkgroup-armv7-unknown-linux-gnueabihf/libzkgroup.so
-          asset_name: libzkgroup-linux-armv7-${{ env.VERSION }}.so
+          asset_name: libzkgroup_linux_armv7_${{ env.VERSION }}.so
           asset_content_type: application/octet-stream
