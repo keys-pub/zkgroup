@@ -39,16 +39,16 @@ jobs:
         with:
           use-cross: true
           command: build
-          args: --target=${{ matrix.target }} --manifest-path lib/zkgroup/Cargo.toml
+          args: --target=${{ matrix.target }} --release --manifest-path lib/zkgroup/Cargo.toml
 
       - name: List build output
-        run: ls -la lib/zkgroup/target/${{ matrix.target }}/debug
+        run: ls -la lib/zkgroup/target/${{ matrix.target }}/release
 
       - name: Upload built artifact
         uses: actions/upload-artifact@v2
         with:
           name: zkgroup-${{ matrix.target }}
-          path: lib/zkgroup/target/${{ matrix.target }}/debug/libzkgroup.so
+          path: lib/zkgroup/target/${{ matrix.target }}/release/libzkgroup.so
           if-no-files-found: error
 
   release:
