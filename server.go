@@ -35,6 +35,24 @@ func (p ServerPublicParams) VerifySignature(message []byte, notarySignarture Not
 	return nil
 }
 
+type ProfileKeyCredential []byte
+
+func (p ServerPublicParams) ReceiveProfileKeyCredential(profileKeyCredentialRequestContext, profileKeyCredentialResponse []byte) (ProfileKeyCredential, error) {
+	out := make([]byte, C.PROFILE_KEY_CREDENTIAL_LEN)
+	if res := C.FFI_ServerPublicParams_receiveProfileKeyCredential(
+		cBytes(p), cLen(p),
+		cBytes(profileKeyCredentialRequestContext), cLen(profileKeyCredentialRequestContext),
+		cBytes(profileKeyCredentialResponse), cLen(profileKeyCredentialResponse),
+		cBytes(out), cLen(out),
+	); res != C.FFI_RETURN_OK {
+		if res == C.FFI_RETURN_INPUT_ERROR {
+			return nil, ErrVerificationFailed
+		}
+		return nil, errFromCode(res)
+	}
+	return ProfileKeyCredential(out), nil
+}
+
 // ServerSecretParams ...
 type ServerSecretParams []byte
 
@@ -73,6 +91,58 @@ func (g ServerSecretParams) SignDeterministic(rand []byte, message []byte) (Nota
 		return nil, errFromCode(res)
 	}
 	return out, nil
+}
+
+// ServerZkProfileOperations ...
+type ServerZkProfileOperations struct {
+	serverSecretParams ServerSecretParams
+}
+
+// NewServerZkProfileOperations ...
+func NewServerZkProfileOperations(serverSecretParams ServerSecretParams) *ServerZkProfileOperations {
+	return &ServerZkProfileOperations{serverSecretParams: serverSecretParams}
+}
+
+type ProfileKeyCredentialRequest []byte
+type ProfileKeyCommitment []byte
+
+// IssueAuthCredential ...
+func (c ServerZkProfileOperations) IssueProfileKeyCredential(profileKeyCredentialRequest ProfileKeyCredentialRequest, uuid UUID, profileKeyCommitment ProfileKeyCommitment) (ProfileKeyCredentialResponse, error) {
+	return c.IssueProfileKeyCredentialDeterministic(randBytes(32), profileKeyCredentialRequest, uuid, profileKeyCommitment)
+}
+
+// IssueAuthCredentialDeterministic ...
+func (c ServerZkProfileOperations) IssueProfileKeyCredentialDeterministic(random []byte,
+	profileKeyCredentialRequest ProfileKeyCredentialRequest,
+	uuid UUID,
+	profileKeyCommitment ProfileKeyCommitment,
+
+) (ProfileKeyCredentialResponse, error) {
+	out := make([]byte, C.PROFILE_KEY_CREDENTIAL_RESPONSE_LEN)
+	if res := C.FFI_ServerSecretParams_issueProfileKeyCredentialDeterministic(
+		cBytes(c.serverSecretParams), cLen(c.serverSecretParams),
+		cBytes(random), cLen(random),
+		cBytes(profileKeyCredentialRequest), cLen(profileKeyCredentialRequest),
+		cBytes(uuid), cLen(uuid),
+		cBytes(profileKeyCommitment), cLen(profileKeyCommitment),
+		cBytes(out), cLen(out)); res != C.FFI_RETURN_OK {
+		return nil, errFromCode(res)
+	}
+	return ProfileKeyCredentialResponse(out), nil
+}
+
+// VerifyProfileKeyCredentialPresentation ...
+func (c ServerZkProfileOperations) VerifyProfileKeyCredentialPresentation(groupPublicParams GroupPublicParams, profileKeyCredentialPresentation ProfileKeyCredentialPresentation) error {
+	if res := C.FFI_ServerSecretParams_verifyProfileKeyCredentialPresentation(
+		cBytes(c.serverSecretParams), cLen(c.serverSecretParams),
+		cBytes(groupPublicParams), cLen(groupPublicParams),
+		cBytes(profileKeyCredentialPresentation), cLen(profileKeyCredentialPresentation)); res != C.FFI_RETURN_OK {
+		if res == C.FFI_RETURN_INPUT_ERROR {
+			return ErrVerificationFailed
+		}
+		return errFromCode(res)
+	}
+	return nil
 }
 
 // ServerZkAuthOperations ...
@@ -116,4 +186,17 @@ func (c ServerZkAuthOperations) VerifyAuthCredentialPresentation(groupPublicPara
 		return errFromCode(res)
 	}
 	return nil
+}
+func (s ServerPublicParams) CreateProfileKeyCredentialPresentation(groupSecretParams, profileKeyCredential []byte) ([]byte, error) {
+	out := make([]byte, C.PROFILE_KEY_CREDENTIAL_PRESENTATION_LEN)
+	random := randBytes(32)
+	if res := C.FFI_ServerPublicParams_createProfileKeyCredentialPresentationDeterministic(
+		cBytes(s), cLen(s),
+		cBytes(random), cLen(random),
+		cBytes(groupSecretParams), cLen(groupSecretParams),
+		cBytes(profileKeyCredential), cLen(profileKeyCredential),
+		cBytes(out), cLen(out)); res != C.FFI_RETURN_OK {
+		return nil, errFromCode(res)
+	}
+	return ProfileKeyCredentialPresentation(out), nil
 }
