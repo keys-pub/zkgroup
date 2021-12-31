@@ -1,7 +1,8 @@
 
 all: build
 
-build: cargo build --release
+build: 
+	@cd zkgroup && cargo build --release
 
 build-cross: 
 	@echo "Building..."
